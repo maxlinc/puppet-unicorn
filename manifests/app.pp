@@ -13,11 +13,18 @@ define unicorn::app (
   $rack_env        = 'production',
   $preload_app     = false,
   $source          = 'system',
+  $use_binstubs    = false,
 ) {
 
   # get the common stuff, like the unicorn package(s)
   require unicorn
   include unicorn::params
+
+  if $use_binstubs {
+    $bin_dir = "${approot}/bin"
+  } else {
+    $bin_dir = unicorn::params::bin_dir
+  }
 
   # If we have been given a config path, use it, if not, make one up.
   # This _may_ not be the most secure, as it should live outside of
@@ -33,11 +40,11 @@ define unicorn::app (
   # XXX Debian Wheezy specific
   case $source {
     'system': {
-      $daemon = $unicorn::params::unicorn_executable
+      $daemon = "${bin_dir}/unicorn"
       $daemon_opts = $unicorn_opts
     }
     'bundler': {
-      $daemon = $unicorn::params::bundler_executable
+      $daemon = "${bin_dir}/bundle"
       $daemon_opts = "exec unicorn ${unicorn_opts}"
     }
     default: {
