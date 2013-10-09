@@ -14,6 +14,8 @@ define unicorn::app (
   $preload_app     = false,
   $source          = 'system',
   $use_binstubs    = false,
+  $ensure          = running,
+  $enable          = true,
 ) {
 
   # get the common stuff, like the unicorn package(s)
@@ -53,8 +55,8 @@ define unicorn::app (
   }
 
   service { "unicorn_${name}":
-    ensure     => running,
-    enable     => true,
+    ensure     => $ensure,
+    enable     => $enable,
     hasstatus  => true,
     start      => "/etc/init.d/unicorn_${name} start",
     stop       => "/etc/init.d/unicorn_${name} stop",
